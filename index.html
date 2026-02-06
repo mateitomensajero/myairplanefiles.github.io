@@ -22,14 +22,18 @@ body.dark {
 
 * { box-sizing: border-box; }
 
-body {
+/* Prevent scrolling on all devices */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  touch-action: none;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  overflow: hidden;
-  transition: background 1.2s ease;
   position: relative;
+  transition: background 1.2s ease;
 }
 
 /* Top bar for ZULU */
@@ -77,36 +81,19 @@ body {
   transform: translateX(120%);
   transition: transform 1.2s cubic-bezier(.2,.9,.15,1);
 }
-
-/* Card: fix width and prevent shift */
-.card {
-  width: 100%;
-  max-width: 460px;
-  min-width: 320px;  /* prevents shrinking too much */
-  background: var(--card);
-  backdrop-filter: blur(30px) saturate(160%);
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.35);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
 .screen.active { transform: translateX(0); }
 
 /* Card */
 .card {
   width: 100%;
   max-width: 460px;
+  min-width: 320px;
   background: var(--card);
   backdrop-filter: blur(30px) saturate(160%);
   border-radius: 28px;
   padding: 32px;
   box-shadow: 0 40px 80px rgba(0,0,0,0.35);
   text-align: center;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -163,8 +150,6 @@ button:hover {
   gap: 10px;
 }
 
-.viewer-wrap h2 { margin: 8px 0 4px; }
-
 iframe, img {
   width: 100%;
   height: 100%;
@@ -174,8 +159,8 @@ iframe, img {
 
 #imgFrame {
   object-fit: contain;
-  max-height: 80vh;   /* limit to viewport */
   max-width: 100%;
+  max-height: 100%;
 }
 
 /* Siri background */
@@ -250,16 +235,8 @@ iframe, img {
   transition: 0.6s ease;
   z-index: 50;
 }
-
-.modal.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal .card {
-  max-width: 480px;
-  width: 90%;
-}
+.modal.active { opacity: 1; pointer-events: auto; }
+.modal .card { max-width: 480px; width: 90%; }
 
 /* METAR Box */
 #metarResultBox {
@@ -283,9 +260,7 @@ iframe, img {
   font-family: "Roboto", sans-serif;
   color: rgba(0,0,0,0.7);
   z-index: 200;
-  pointer-events: auto;
 }
-
 #disclaimer a {
   color: var(--accent);
   text-decoration: none;
@@ -404,22 +379,21 @@ iframe, img {
 // LOGIN
 const LOGINACCEPTED=[{user:"pilot",password:"airbus"},{user:"admin",password:"1234"}];
 let historyStack=["login"];
-
 function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");historyStack.push(id);}
 function back(){historyStack.pop();const prev=historyStack[historyStack.length-1]||"main";document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(prev).classList.add("active");}
 function login(){const ok=LOGINACCEPTED.some(a=>a.user===user.value&&a.password===pass.value);if(!ok)return showModal("Login Failed","Incorrect username or password.");go("main");}
-
-// VIEWER & CHECKLISTS
 function openViewer(title,url){viewerTitle.innerText=title;const isPDF=url.includes(".pdf");pdfFrame.style.display=isPDF?"block":"none";imgFrame.style.display=isPDF?"none":"block";if(isPDF) pdfFrame.src=url;else imgFrame.src=url;go("viewer");}
+
+// CHECKLISTS
 function openChecklist(title, url){
     imgFrame.style.display = "block";
     pdfFrame.style.display = "none";
     imgFrame.src = url;
 
-    // Hide the viewer title for checklists
+    // Hide title for checklist images
     viewerTitle.innerText = "";
 
-    // Adjust size per aircraft
+    // Size per aircraft
     if(title.includes("A319")) {
         imgFrame.style.maxWidth = "800px";
         imgFrame.style.maxHeight = "70vh";
@@ -433,18 +407,12 @@ function openChecklist(title, url){
 
     go("viewer");
 }
-document.body.style.overflow = "hidden";
 
-  
-
-// MODAL
 function showModal(title,msg){modalTitle.innerText=title;modalMsg.innerText=msg;modal.classList.add("active");}
 function closeModal(modalId="modal"){document.getElementById(modalId).classList.remove("active");}
-
-// THEME
 function toggleTheme(){document.body.classList.toggle("dark");}
 
-// FLIP CLOCK
+// Flip Clock
 const flipText=document.getElementById("flipText");
 function createFlip(chars){flipText.innerHTML="";chars.forEach(c=>{const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front">${c}</span><span class="back"></span>`;flipText.appendChild(d);});}
 function addTile(char=""){const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front"></span><span class="back">${char}</span>`;flipText.appendChild(d);return d;}
@@ -472,6 +440,9 @@ async function fetchMetar(){
         resultBox.innerText=metarText;
     }catch(err){console.error(err);resultBox.innerText="Error fetching METAR";}
 }
+
+// Prevent mobile scrolling (iOS safeguard)
+document.addEventListener('touchmove', function(e){e.preventDefault();},{passive:false});
 </script>
 </body>
 </html>
