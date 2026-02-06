@@ -72,16 +72,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* ensure it takes full viewport */
-  padding: 0 20px;   /* horizontal padding only */
+  min-height: 100vh;
+  padding: 0 20px;
   transform: translateX(120%);
   transition: transform 1.2s cubic-bezier(.2,.9,.15,1);
 }
-
-
-.screen.active {
-  transform: translateX(0);
-}
+.screen.active { transform: translateX(0); }
 
 /* Card */
 .card {
@@ -157,15 +153,13 @@ iframe, img {
   height: 100%;
   border-radius: 18px;
   border: none;
-  object-fit: contain; /* for PDFs, keep as contain */
 }
 
 #imgFrame {
-  object-fit: contain; /* ensure checklist images scale properly */
+  object-fit: contain;
   max-height: 100%;
   max-width: 100%;
 }
-
 
 /* Siri background */
 .siri-bg {
@@ -245,7 +239,6 @@ iframe, img {
   pointer-events: auto;
 }
 
-/* Modal card centered */
 .modal .card {
   max-width: 480px;
   width: 90%;
@@ -272,10 +265,9 @@ iframe, img {
   font-size: 13px;
   font-family: "Roboto", sans-serif;
   color: rgba(0,0,0,0.7);
-  z-index: 200;          /* make sure it's above siri-bg and modals */
-  pointer-events: auto;   /* ensure clicks are possible */
+  z-index: 200;
+  pointer-events: auto;
 }
-
 
 #disclaimer a {
   color: var(--accent);
@@ -306,8 +298,6 @@ iframe, img {
   ⚠️ NOT FOR REAL WORLD USE ⚠️
 </div>
 
-
-
 <!-- LOGIN -->
 <div id="login" class="screen active">
   <div class="siri-bg"></div>
@@ -328,7 +318,6 @@ iframe, img {
     <button onclick="requestMetar()">METAR</button>
   </div>
 </div>
-
 
 <!-- METAR modal -->
 <div id="metarModal" class="modal">
@@ -402,6 +391,8 @@ let historyStack=["login"];
 function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");historyStack.push(id);}
 function back(){historyStack.pop();const prev=historyStack[historyStack.length-1]||"main";document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(prev).classList.add("active");}
 function login(){const ok=LOGINACCEPTED.some(a=>a.user===user.value&&a.password===pass.value);if(!ok)return showModal("Login Failed","Incorrect username or password.");go("main");}
+
+// VIEWER & CHECKLISTS
 function openViewer(title,url){viewerTitle.innerText=title;const isPDF=url.includes(".pdf");pdfFrame.style.display=isPDF?"block":"none";imgFrame.style.display=isPDF?"none":"block";if(isPDF) pdfFrame.src=url;else imgFrame.src=url;go("viewer");}
 function openChecklist(title, url){
     viewerTitle.innerText = title;
@@ -414,11 +405,15 @@ function openChecklist(title, url){
     }
     go("viewer");
 }
+
+// MODAL
 function showModal(title,msg){modalTitle.innerText=title;modalMsg.innerText=msg;modal.classList.add("active");}
 function closeModal(modalId="modal"){document.getElementById(modalId).classList.remove("active");}
+
+// THEME
 function toggleTheme(){document.body.classList.toggle("dark");}
 
-// Flip Clock
+// FLIP CLOCK
 const flipText=document.getElementById("flipText");
 function createFlip(chars){flipText.innerHTML="";chars.forEach(c=>{const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front">${c}</span><span class="back"></span>`;flipText.appendChild(d);});}
 function addTile(char=""){const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front"></span><span class="back">${char}</span>`;flipText.appendChild(d);return d;}
