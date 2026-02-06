@@ -265,7 +265,10 @@ iframe, img {
   font-size: 13px;
   font-family: "Roboto", sans-serif;
   color: rgba(0,0,0,0.7);
+  z-index: 200;          /* make sure it's above siri-bg and modals */
+  pointer-events: auto;   /* ensure clicks are possible */
 }
+
 
 #disclaimer a {
   color: var(--accent);
@@ -289,10 +292,13 @@ iframe, img {
 
 <!-- Disclaimer bottom-left -->
 <div id="disclaimer">
-  QRH provided by <a href="https://fenixsim.com" target="_blank" rel="noopener noreferrer">Fenix Simulations</a><br>
-  METAR by <a href="https://ourairports.com" target="_blank" rel="noopener noreferrer">ourairports.com</a><br>
+  QRH provided by 
+  <a href="https://fenixsim.com" target="_blank" rel="noopener noreferrer">Fenix Simulations</a><br>
+  METAR by 
+  <a href="https://ourairports.com" target="_blank" rel="noopener noreferrer">ourairports.com</a><br>
   ⚠️ NOT FOR REAL WORLD USE ⚠️
 </div>
+
 
 
 <!-- LOGIN -->
