@@ -77,6 +77,23 @@ body {
   transform: translateX(120%);
   transition: transform 1.2s cubic-bezier(.2,.9,.15,1);
 }
+
+/* Card: fix width and prevent shift */
+.card {
+  width: 100%;
+  max-width: 460px;
+  min-width: 320px;  /* prevents shrinking too much */
+  background: var(--card);
+  backdrop-filter: blur(30px) saturate(160%);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.35);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 .screen.active { transform: translateX(0); }
 
 /* Card */
@@ -157,7 +174,7 @@ iframe, img {
 
 #imgFrame {
   object-fit: contain;
-  max-height: 100%;
+  max-height: 80vh;   /* limit to viewport */
   max-width: 100%;
 }
 
