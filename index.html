@@ -72,12 +72,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* ensure it takes full viewport */
-  padding: 0 20px;   /* horizontal padding only */
+  min-height: 100vh;
+  padding: 0 20px;
   transform: translateX(120%);
   transition: transform 1.2s cubic-bezier(.2,.9,.15,1);
 }
-
 
 .screen.active {
   transform: translateX(0);
@@ -85,7 +84,6 @@ body {
 
 /* Card */
 .card {
-  margin: 0 auto;
   width: 100%;
   max-width: 460px;
   background: var(--card);
@@ -94,6 +92,11 @@ body {
   padding: 32px;
   box-shadow: 0 40px 80px rgba(0,0,0,0.35);
   text-align: center;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu { display: grid; gap: 12px; }
@@ -252,6 +255,24 @@ iframe, img {
   margin-bottom: 12px;
   text-align: center;
 }
+
+/* Disclaimer */
+#disclaimer {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  font-size: 13px;
+  font-family: "Roboto", sans-serif;
+  color: rgba(0,0,0,0.7);
+}
+
+#disclaimer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+#disclaimer a:hover {
+  text-decoration: underline;
+}
 </style>
 </head>
 <body>
@@ -264,6 +285,13 @@ iframe, img {
 
 <!-- Theme switch top-right -->
 <div id="themeSwitch" onclick="toggleTheme()">🌗</div>
+
+<!-- Disclaimer bottom-left -->
+<div id="disclaimer">
+  QRH provided by <a href="https://fenixsim.com" target="_blank">Fenix Simulations</a><br>
+  METAR by <a href="https://ourairports.com" target="_blank">ourairports.com</a><br>
+  ⚠️ NOT FOR REAL WORLD USE ⚠️
+</div>
 
 <!-- LOGIN -->
 <div id="login" class="screen active">
@@ -279,6 +307,7 @@ iframe, img {
 <!-- MAIN -->
 <div id="main" class="screen">
   <div class="card menu">
+    <button class="small" onclick="back()">⬅ Back</button>
     <h1>Flight Docs</h1>
     <button onclick="go('qrh')">QRH</button>
     <button onclick="go('checklists')">Checklists</button>
@@ -302,43 +331,43 @@ iframe, img {
 <!-- QRH -->
 <div id="qrh" class="screen">
   <div class="card menu">
+    <button class="small" onclick="back()">⬅ Back</button>
     <h1>Select Aircraft</h1>
     <button onclick="go('engine')">A319</button>
     <button onclick="go('engine')">A320</button>
     <button onclick="go('engine')">A321</button>
-    <button class="small" onclick="back()">⬅ Back</button>
   </div>
 </div>
 
 <!-- ENGINE -->
 <div id="engine" class="screen">
   <div class="card menu">
+    <button class="small" onclick="back()">⬅ Back</button>
     <h1>Select Engine</h1>
     <button onclick="openViewer('A320 QRH - IAE','https://docs.google.com/gview?embedded=true&url=https://raw.githubusercontent.com/mateitomensajero/fnxqrhs/dd1b02eeadc96b82bb4df65a598d2f5292b96725/Fenix%20IAE%20QRH.pdf')">IAE</button>
     <button onclick="openViewer('A320 QRH - CFM','https://docs.google.com/gview?embedded=true&url=https://raw.githubusercontent.com/mateitomensajero/fnxqrhs/dd1b02eeadc96b82bb4df65a598d2f5292b96725/Fenix%20CFM%20QRH.pdf')">CFM</button>
-    <button class="small" onclick="back()">⬅ Back</button>
   </div>
 </div>
 
 <!-- CHECKLISTS -->
 <div id="checklists" class="screen">
   <div class="card menu">
+    <button class="small" onclick="back()">⬅ Back</button>
     <h1>Select Aircraft</h1>
     <button onclick="openChecklist('A319 Checklist','https://cdn.flightsim.to/images/27/a319a320a321-checklist--457255-1731234405-8b9fm.jpg?width=800')">A319</button>
     <button onclick="openChecklist('A320 Checklist','https://cdn.x-plane.to/images/01/airbus-a32x-checklist-2022-38PzO.jpg?width=1400&auto_optimize=medium')">A320</button>
     <button onclick="openChecklist('A321 Checklist','https://media.invisioncic.com/c334187/monthly_2025_11/92ad0a11_a245_4004_8835_5a255ac88ba1_6b78677008f43dd5a6b6c52d0621b0dc0c28fc88.jpeg.18ce901d51b1bbe3a23ff6db56161f4d.jpeg')">A321</button>
-    <button class="small" onclick="back()">⬅ Back</button>
   </div>
 </div>
 
 <!-- VIEWER -->
 <div id="viewer" class="screen">
   <div class="viewer-wrap">
+    <button class="small" style="align-self:flex-start;" onclick="back()">⬅ Back</button>
     <h2 id="viewerTitle"></h2>
     <iframe id="pdfFrame"></iframe>
     <img id="imgFrame" style="display:none" />
   </div>
-  <button class="small" style="position:fixed; bottom:22px; left:50%; transform:translateX(-50%)" onclick="back()">⬅ Back</button>
 </div>
 
 <!-- ERROR MODAL -->
@@ -351,6 +380,7 @@ iframe, img {
 </div>
 
 <script>
+// LOGIN
 const LOGINACCEPTED=[{user:"pilot",password:"airbus"},{user:"admin",password:"1234"}];
 let historyStack=["login"];
 
