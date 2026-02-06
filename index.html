@@ -413,13 +413,22 @@ function login(){const ok=LOGINACCEPTED.some(a=>a.user===user.value&&a.password=
 function openViewer(title,url){viewerTitle.innerText=title;const isPDF=url.includes(".pdf");pdfFrame.style.display=isPDF?"block":"none";imgFrame.style.display=isPDF?"none":"block";if(isPDF) pdfFrame.src=url;else imgFrame.src=url;go("viewer");}
 function openChecklist(title, url){
     viewerTitle.innerText = title;
-    if(url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png")) {
-        pdfFrame.style.display = "none";
-        imgFrame.style.display = "block";
-        imgFrame.src = url;
-    } else {
-        openViewer(title, url);
+    pdfFrame.style.display = "none";
+    imgFrame.style.display = "block";
+    imgFrame.src = url;
+
+    // Adjust size per aircraft
+    if(title.includes("A319")) {
+        imgFrame.style.maxWidth = "800px";
+        imgFrame.style.maxHeight = "70vh";
+    } else if(title.includes("A320")) {
+        imgFrame.style.maxWidth = "1400px";
+        imgFrame.style.maxHeight = "85vh";
+    } else if(title.includes("A321")) {
+        imgFrame.style.maxWidth = "1200px";
+        imgFrame.style.maxHeight = "80vh";
     }
+
     go("viewer");
 }
 
