@@ -30,31 +30,13 @@ body {
   overflow: hidden;
   transition: background 1.2s ease;
   position: relative;
-  padding-top: 60px; /* space for METAR banner */
-}
-
-/* METAR Banner */
-#metarDisplay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  background: rgba(10,132,255,0.85);
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  z-index: 200;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  padding-top: 50px; /* for ZULU topbar */
 }
 
 /* Top bar for ZULU */
 #topbar {
   position: fixed;
-  top: 50px;
+  top: 10px;
   left: 10px;
   font-family: "Roboto", monospace;
   font-size: 16px;
@@ -70,7 +52,7 @@ body {
 /* Theme switch */
 #themeSwitch {
   position: fixed;
-  top: 50px;
+  top: 10px;
   right: 10px;
   font-size: 22px;
   cursor: pointer;
@@ -249,13 +231,22 @@ iframe, img {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* METAR Box */
+#metarResultBox {
+  width: 100%;
+  background: rgba(10,132,255,0.85);
+  color: white;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
 </style>
 </head>
-
 <body>
-
-<!-- METAR Banner on top -->
-<div id="metarDisplay">METAR will appear here</div>
 
 <!-- ZULU top-left -->
 <div id="topbar">
@@ -291,14 +282,16 @@ iframe, img {
 <div id="metarModal" class="modal">
   <div class="card">
     <h2>METAR Request</h2>
+    <div id="metarResultBox">METAR will appear here</div>
     <input id="icaoInput" placeholder="Enter ICAO code">
-    <button onclick="fetchMetar()">Get METAR</button>
-    <p id="metarResult" style="margin-top:10px;"></p>
-    <button onclick="closeModal('metarModal')">Close</button>
+    <div style="display:flex; gap:12px; margin-top:12px;">
+      <button style="flex:1" onclick="fetchMetar()">Get METAR</button>
+      <button style="flex:1" onclick="closeModal('metarModal')">Close</button>
+    </div>
   </div>
 </div>
 
-<!-- QRH, ENGINE, CHECKLISTS, VIEWER, MODAL same as before -->
+<!-- QRH -->
 <div id="qrh" class="screen">
   <div class="card menu">
     <h1>Select Aircraft</h1>
@@ -309,6 +302,7 @@ iframe, img {
   </div>
 </div>
 
+<!-- ENGINE -->
 <div id="engine" class="screen">
   <div class="card menu">
     <h1>Select Engine</h1>
@@ -318,6 +312,7 @@ iframe, img {
   </div>
 </div>
 
+<!-- CHECKLISTS -->
 <div id="checklists" class="screen">
   <div class="card menu">
     <h1>Select Aircraft</h1>
@@ -328,6 +323,7 @@ iframe, img {
   </div>
 </div>
 
+<!-- VIEWER -->
 <div id="viewer" class="screen">
   <div class="viewer-wrap">
     <h2 id="viewerTitle"></h2>
@@ -337,6 +333,7 @@ iframe, img {
   <button class="small" style="position:fixed; bottom:22px; left:50%; transform:translateX(-50%)" onclick="back()">⬅ Back</button>
 </div>
 
+<!-- ERROR MODAL -->
 <div id="modal" class="modal">
   <div class="card">
     <h2 id="modalTitle">Error</h2>
@@ -346,96 +343,45 @@ iframe, img {
 </div>
 
 <script>
-// LOGIN
-const LOGINACCEPTED = [
-  { user: "pilot", password: "airbus" },
-  { user: "admin", password: "1234" }
-];
-let historyStack = ["login"];
+const LOGINACCEPTED=[{user:"pilot",password:"airbus"},{user:"admin",password:"1234"}];
+let historyStack=["login"];
 
-function go(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  historyStack.push(id);
-}
-function back() {
-  historyStack.pop();
-  const prev = historyStack[historyStack.length - 1] || "main";
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(prev).classList.add("active");
-}
-function login() {
-  const ok = LOGINACCEPTED.some(a => a.user === user.value && a.password === pass.value);
-  if (!ok) return showModal("Login Failed", "Incorrect username or password.");
-  go("main");
-}
-function openViewer(title,url) {
-  viewerTitle.innerText = title;
-  const isPDF = url.includes(".pdf");
-  pdfFrame.style.display = isPDF?"block":"none";
-  imgFrame.style.display = isPDF?"none":"block";
-  if(isPDF) pdfFrame.src=url; else imgFrame.src=url;
-  go("viewer");
-}
-function openChecklist(title,url){ openViewer(title,url); }
-function showModal(title,msg){ modalTitle.innerText=title; modalMsg.innerText=msg; modal.classList.add("active"); }
-function closeModal(modalId="modal"){ document.getElementById(modalId).classList.remove("active"); }
-function toggleTheme(){ document.body.classList.toggle("dark"); }
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");historyStack.push(id);}
+function back(){historyStack.pop();const prev=historyStack[historyStack.length-1]||"main";document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(prev).classList.add("active");}
+function login(){const ok=LOGINACCEPTED.some(a=>a.user===user.value&&a.password===pass.value);if(!ok)return showModal("Login Failed","Incorrect username or password.");go("main");}
+function openViewer(title,url){viewerTitle.innerText=title;const isPDF=url.includes(".pdf");pdfFrame.style.display=isPDF?"block":"none";imgFrame.style.display=isPDF?"none":"block";if(isPDF) pdfFrame.src=url;else imgFrame.src=url;go("viewer");}
+function openChecklist(title,url){openViewer(title,url);}
+function showModal(title,msg){modalTitle.innerText=title;modalMsg.innerText=msg;modal.classList.add("active");}
+function closeModal(modalId="modal"){document.getElementById(modalId).classList.remove("active");}
+function toggleTheme(){document.body.classList.toggle("dark");}
 
 // Flip Clock
 const flipText=document.getElementById("flipText");
-function createFlip(chars){ flipText.innerHTML=""; chars.forEach(c=>{ const d=document.createElement("div"); d.className="flip-char"; d.innerHTML=`<span class="front">${c}</span><span class="back"></span>`; flipText.appendChild(d); }); }
-function addTile(char=""){ const d=document.createElement("div"); d.className="flip-char"; d.innerHTML=`<span class="front"></span><span class="back">${char}</span>`; flipText.appendChild(d); return d; }
-function flipTo(text){ const chars=text.split(""); if(chars.length===5&&flipText.children.length===4)addTile(""); [...flipText.children].forEach((el,i)=>{ setTimeout(()=>{ el.querySelector(".back").innerText=chars[i]||""; el.classList.add("flip"); setTimeout(()=>{ el.querySelector(".front").innerText=chars[i]||""; el.classList.remove("flip"); },650); },i*500); }); if(chars.length===4&&flipText.children.length===5){ const last=flipText.lastElementChild; setTimeout(()=>{ last.querySelector(".back").innerText=""; last.classList.add("flip"); setTimeout(()=>flipText.removeChild(last),650); },2200); } }
-createFlip(["A","3","2","0"]);
-function loopFlip(){ setTimeout(()=>flipTo("HELLO"),600); setTimeout(()=>flipTo("A320"),4800); }
-loopFlip(); setInterval(loopFlip,9500);
+function createFlip(chars){flipText.innerHTML="";chars.forEach(c=>{const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front">${c}</span><span class="back"></span>`;flipText.appendChild(d);});}
+function addTile(char=""){const d=document.createElement("div");d.className="flip-char";d.innerHTML=`<span class="front"></span><span class="back">${char}</span>`;flipText.appendChild(d);return d;}
+function flipTo(text){const chars=text.split("");if(chars.length===5&&flipText.children.length===4)addTile("");[...flipText.children].forEach((el,i)=>{setTimeout(()=>{el.querySelector(".back").innerText=chars[i]||"";el.classList.add("flip");setTimeout(()=>{el.querySelector(".front").innerText=chars[i]||"";el.classList.remove("flip");},650);},i*500);});if(chars.length===4&&flipText.children.length===5){const last=flipText.lastElementChild;setTimeout(()=>{last.querySelector(".back").innerText="";last.classList.add("flip");setTimeout(()=>flipText.removeChild(last),650);},2200);}}
+createFlip(["A","3","2","0"]);function loopFlip(){setTimeout(()=>flipTo("HELLO"),600);setTimeout(()=>flipTo("A320"),4800);}loopFlip();setInterval(loopFlip,9500);
 
 // ZULU TIME
-function updateZulu(){
-  const now=new Date();
-  const utc=new Date(now.getTime()+(now.getTimezoneOffset()*60000));
-  document.getElementById("zuluTime").innerText=utc.toISOString().substr(11,8);
-  document.getElementById("zuluDate").innerText=utc.toISOString().substr(0,10);
-}
-setInterval(updateZulu,1000);
-updateZulu();
+function updateZulu(){const now=new Date();const utc=new Date(now.getTime()+(now.getTimezoneOffset()*60000));document.getElementById("zuluTime").innerText=utc.toISOString().substr(11,8);document.getElementById("zuluDate").innerText=utc.toISOString().substr(0,10);}
+setInterval(updateZulu,1000);updateZulu();
 
 // METAR
-function requestMetar(){
-  document.getElementById("metarModal").classList.add("active");
-  document.getElementById("metarResult").innerText="";
-  document.getElementById("icaoInput").value="";
-}
-
+function requestMetar(){document.getElementById("metarModal").classList.add("active");document.getElementById("metarResultBox").innerText="METAR will appear here";document.getElementById("icaoInput").value="";}
 async function fetchMetar(){
-  const icao=document.getElementById("icaoInput").value.trim().toUpperCase();
-  if(!icao||icao.length!==4){ showModal("Invalid ICAO","Enter valid 4-letter ICAO"); return; }
-  document.getElementById("metarResult").innerText="Fetching METAR…";
-
-  const url=`https://api.allorigins.win/get?url=${encodeURIComponent(`https://ourairports.com/airports/${icao}/weather.html`)}`;
-
-  try{
-    const resp=await fetch(url);
-    const text=await resp.json();
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(text.contents,"text/html");
-
-    let metarText="";
-    const pre=doc.querySelector("pre");
-    if(pre){ metarText=pre.textContent.trim(); }
-    else{
-      const bodyText=doc.body.textContent;
-      const match=bodyText.match(/\b[A-Z]{4}\s+\d{6}Z.*?KT.*?(?=\s{2,}|$)/);
-      metarText=match?match[0]:"METAR not found";
-    }
-
-    document.getElementById("metarDisplay").innerText=`METAR ${icao}: ${metarText}`;
-    document.getElementById("metarResult").innerText=metarText;
-
-  }catch(e){
-    document.getElementById("metarResult").innerText="Error fetching METAR";
-  }
+    const icao=document.getElementById("icaoInput").value.trim().toUpperCase();
+    const resultBox=document.getElementById("metarResultBox");
+    if(!icao || icao.length!==4){showModal("Invalid ICAO","Enter a valid 4-letter ICAO code");return;}
+    resultBox.innerText="Fetching METAR…";
+    try{
+        const url=`https://api.allorigins.win/get?url=${encodeURIComponent(`https://ourairports.com/airports/${icao}/weather.html`)}`;
+        const resp=await fetch(url);
+        const data=await resp.json();
+        const html=data.contents;
+        const metarMatch=html.match(/\b[A-Z]{4}\s+\d{6}Z.*?KT.*?(?=<|$)/s);
+        const metarText=metarMatch?metarMatch[0].trim():"METAR not found";
+        resultBox.innerText=metarText;
+    }catch(err){console.error(err);resultBox.innerText="Error fetching METAR";}
 }
 </script>
 </body>
