@@ -157,8 +157,15 @@ iframe, img {
   height: 100%;
   border-radius: 18px;
   border: none;
-  object-fit: contain;
+  object-fit: contain; /* for PDFs, keep as contain */
 }
+
+#imgFrame {
+  object-fit: contain; /* ensure checklist images scale properly */
+  max-height: 100%;
+  max-width: 100%;
+}
+
 
 /* Siri background */
 .siri-bg {
@@ -396,7 +403,17 @@ function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remo
 function back(){historyStack.pop();const prev=historyStack[historyStack.length-1]||"main";document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(prev).classList.add("active");}
 function login(){const ok=LOGINACCEPTED.some(a=>a.user===user.value&&a.password===pass.value);if(!ok)return showModal("Login Failed","Incorrect username or password.");go("main");}
 function openViewer(title,url){viewerTitle.innerText=title;const isPDF=url.includes(".pdf");pdfFrame.style.display=isPDF?"block":"none";imgFrame.style.display=isPDF?"none":"block";if(isPDF) pdfFrame.src=url;else imgFrame.src=url;go("viewer");}
-function openChecklist(title,url){openViewer(title,url);}
+function openChecklist(title, url){
+    viewerTitle.innerText = title;
+    if(url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".png")) {
+        pdfFrame.style.display = "none";
+        imgFrame.style.display = "block";
+        imgFrame.src = url;
+    } else {
+        openViewer(title, url);
+    }
+    go("viewer");
+}
 function showModal(title,msg){modalTitle.innerText=title;modalMsg.innerText=msg;modal.classList.add("active");}
 function closeModal(modalId="modal"){document.getElementById(modalId).classList.remove("active");}
 function toggleTheme(){document.body.classList.toggle("dark");}
