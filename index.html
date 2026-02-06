@@ -72,10 +72,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  min-height: 100vh; /* ensure it takes full viewport */
+  padding: 0 20px;   /* horizontal padding only */
   transform: translateX(120%);
   transition: transform 1.2s cubic-bezier(.2,.9,.15,1);
 }
+
 
 .screen.active {
   transform: translateX(0);
@@ -83,6 +85,7 @@ body {
 
 /* Card */
 .card {
+  margin: 0 auto;
   width: 100%;
   max-width: 460px;
   background: var(--card);
